@@ -108,6 +108,7 @@ void Item::OnLoad() {
 void ResetCaches() {
 	item_desc_cache.ResetCache();
 	item_name_cache.ResetCache();
+	item_score_cache.ResetCache();
 	map_action_cache.ResetCache();
 	do_not_block_cache.ResetCache();
 	ignore_cache.ResetCache();
@@ -1017,7 +1018,20 @@ void __stdcall Item::OnPropertyBuild(wchar_t* wOut, int nStat, UnitAny* pItem, i
 					statMax += all_stat->dwMax;
 				}
 
-				if (stat->dwMin != stat->dwMax) {
+				if (nStat == STAT_STRENGTHPERLEVEL) {
+					int	aLen = wcslen(wOut);
+					int leftSpace = 128 - aLen > 0 ? 128 - aLen : 0;
+					statMin = D2COMMON_GetBaseStatSigned(D2CLIENT_GetPlayerUnit(), STAT_STRENGTHPERLEVEL, 0);
+					statMax = D2COMMON_GetBaseStatSigned(D2CLIENT_GetPlayerUnit(), STAT_STRENGTHPERLEVEL, 0);
+					if (leftSpace)
+						swprintf_s(wOut + aLen, leftSpace,
+							L" %s[%d - %d]%s",
+							GetColorCode(statRangeColor).c_str(),
+							statMin,
+							statMax,
+							GetColorCode(TextColor::Blue).c_str());
+				}
+				else if (stat->dwMin != stat->dwMax) {
 					int	aLen = wcslen(wOut);
 					int leftSpace = 128 - aLen > 0 ? 128 - aLen : 0;
 
@@ -1154,6 +1168,9 @@ ItemsTxtStat* GetItemsTxtStatByMod(ItemsTxtStat* pStats, int nStats, int nStat, 
 			return &pStats[i];
 		}
 		else if (pProp->wStat[0] == 0xFFFF && pProp->nFunc[0] == 5 && (nStat == STAT_MINIMUMDAMAGE || nStat == STAT_SECONDARYMINIMUMDAMAGE)) {
+			return &pStats[i];
+		}
+		else if ( pProp->nFunc[0] == 17 && (nStat == STAT_STRENGTHPERLEVEL)) {
 			return &pStats[i];
 		}
 		for (int j = 0; j < 7; ++j)
