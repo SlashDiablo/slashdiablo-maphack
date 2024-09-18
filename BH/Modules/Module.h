@@ -47,7 +47,6 @@ class Module {
 		virtual void OnRealmPacketRecv(BYTE* packet, bool* block) {};
 		virtual void OnGamePacketRecv(BYTE* packet, bool* block) {};
 
-		__event void UserInput(const wchar_t* msg, bool fromGame, bool* block);
 		virtual void OnUserInput(const wchar_t* msg, bool fromGame, bool* block) {};
 		virtual void OnChatMsg(const char* user, const char* msg, bool fromGame, bool* block) {};
 };
